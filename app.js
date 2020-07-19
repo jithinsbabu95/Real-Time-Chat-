@@ -16,6 +16,38 @@ const server = app.listen(process.env.PORT || 3000, () => {
 //initialize socket for the server
 const io = socketio(server)
 
+// io.on('connection', socket => {
+//     console.log("New user connected")
+// })
+// io.on('connection', socket => {
+//     console.log("New user connected")
+
+//     socket.username = "Anonymous"
+
+//     socket.on('change_username', data => {
+//         socket.username = data.username
+//     })
+// })
+
 io.on('connection', socket => {
     console.log("New user connected")
+
+    socket.username = "Anonymous"
+
+    socket.on('change_username', data => {
+        socket.username = data.username
+    })
+
+
+    //handle the new message event
+    socket.on('new_message', data => {
+        console.log("new message")
+        io.sockets.emit('receive_message', {message: data.message, username: socket.username})
+    })
+
+    socket.on('typing', data => {
+        socket.broadcast.emit('typing', {username: socket.username})
+    })
+
 })
+
